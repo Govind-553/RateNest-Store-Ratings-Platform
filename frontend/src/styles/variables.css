@@ -1,0 +1,126 @@
+:root {
+  /* ============================================================
+     RateNest Design Tokens — Premium Dark SaaS
+     ============================================================ */
+
+  /* Surfaces (lightest → deepest layering) */
+  --color-bg: #0b0c0e;
+  --color-bg-elevated: #101214;
+  --color-surface: #151719;
+  --color-surface-elevated: #1b1d20;
+  --color-surface-hover: #202328;
+  --color-surface-active: #24272d;
+  --color-input: #111315;
+
+  /* Borders */
+  --color-border: rgba(255, 255, 255, 0.08);
+  --color-border-strong: rgba(255, 255, 255, 0.14);
+  --color-border-hover: rgba(255, 255, 255, 0.2);
+  --color-border-focus: rgba(255, 90, 54, 0.45);
+
+  /* Text */
+  --color-text-primary: #f5f7fa;
+  --color-text-secondary: #a5a9b2;
+  --color-text-muted: #70747d;
+  --color-text-subtle: #565a63;
+
+  /* Brand accent */
+  --color-accent: #ff5a36;
+  --color-accent-hover: #ff704f;
+  --color-accent-soft: rgba(255, 90, 54, 0.12);
+  --color-accent-softer: rgba(255, 90, 54, 0.06);
+  --accent-gradient: linear-gradient(135deg, #ff4d2e, #ff7657);
+
+  /* Status */
+  --color-success: #65e572;
+  --color-success-soft: rgba(101, 229, 114, 0.12);
+  --color-warning: #f6c453;
+  --color-warning-soft: rgba(246, 196, 83, 0.12);
+  --color-danger: #ff5d68;
+  --color-danger-soft: rgba(255, 93, 104, 0.12);
+  --color-info: #6ea8ff;
+  --color-info-soft: rgba(110, 168, 255, 0.12);
+
+  /* Rating stars */
+  --color-star: #ff5a36;
+  --color-star-active: #ff704f;
+  --color-star-empty: rgba(255, 255, 255, 0.16);
+  --color-star-soft: rgba(255, 90, 54, 0.14);
+
+  /* Backdrop / ambient */
+  --color-backdrop: rgba(0, 0, 0, 0.68);
+  --color-glow-accent: rgba(255, 90, 54, 0.08);
+
+  /* ============================================================
+     Typography
+     ============================================================ */
+  --font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', BlinkMacSystemFont, Roboto,
+    'Helvetica Neue', Arial, sans-serif;
+
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-base: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.3125rem;
+  --font-size-2xl: 1.625rem;
+  --font-size-3xl: clamp(1.75rem, 3vw, 2.25rem);
+  --font-size-display: clamp(2rem, 4vw, 2.75rem);
+
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  --letter-spacing-label: 0.08em;
+
+  /* ============================================================
+     Layout & Spacing (8px base)
+     ============================================================ */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+
+  --sidebar-width: 252px;
+  --topbar-height: 60px;
+  --page-max-width: 1280px;
+
+  /* ============================================================
+     Radii
+     ============================================================ */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-full: 9999px;
+
+  /* ============================================================
+     Shadows
+     ============================================================ */
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.24);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.2);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.24);
+  --shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.28);
+  --shadow-xl: 0 24px 64px rgba(0, 0, 0, 0.4);
+  --shadow-accent: 0 8px 28px rgba(255, 90, 54, 0.22);
+  --shadow-focus: 0 0 0 3px rgba(255, 90, 54, 0.12);
+
+  /* ============================================================
+     Transitions
+     ============================================================ */
+  --transition-fast: 150ms ease;
+  --transition-base: 220ms ease;
+  --transition-slow: 320ms ease;
+
+  /* ============================================================
+     Breakpoints (exposed for reference)
+     ============================================================ */
+  --bp-tablet: 1024px;
+  --bp-mobile: 767px;
+}

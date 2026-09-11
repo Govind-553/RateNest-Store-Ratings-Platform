@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <defs>
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#FF5A36"/>
+      <stop offset="100%" stop-color="#FF8A5C"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="14" fill="#141619"/>
+  <rect x="1" y="1" width="62" height="62" rx="13" stroke="rgba(255,90,54,0.35)" stroke-width="1.5"/>
+  <text
+    x="31"
+    y="46"
+    font-family="'Inter', 'Segoe UI', 'Arial', sans-serif"
+    font-weight="700"
+    font-size="38"
+    fill="url(#bgGrad)"
+    text-anchor="middle"
+    dominant-baseline="central"
+  >R</text>
+  <polygon
+    points="48,10 49.6,15.6 55.4,15.6 50.9,19.1 52.5,24.7 48,21.2 43.5,24.7 45.1,19.1 40.6,15.6 46.4,15.6"
+    fill="#F6C453"
+  />
+</svg>
