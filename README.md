@@ -3,26 +3,15 @@
 A full-stack web application for discovering stores, viewing ratings, and submitting 1–5 star ratings, with role-based experiences for Administrators, Normal Users, and Store Owners.
 
 ```mermaid
+%%{init: {'flowchart': {'curve': 'linear'}}}%%
 flowchart LR
-  U[User]
-  A[Administrator]
-  O[Store Owner]
-  F[React Frontend]
-  API[NestJS REST API]
-  AUTH[JWT Authentication]
-  P[Prisma ORM]
-  DB[(PostgreSQL)]
-
-  U --- F
-  A --- F
-  O --- F
-  F ---|Request| API
-  API --- AUTH
-  API --- P
-  P --- DB
-  API ---|Response| U
-  API ---|Response| A
-  API ---|Response| O
+  U[Normal User] --> F[React Frontend]
+  A[Administrator] --> F
+  O[Store Owner] --> F
+  F --> API[NestJS REST API]
+  API --> AUTH[JWT Authentication]
+  API --> P[Prisma ORM]
+  P --> DB[(PostgreSQL)]
 ```
 
 ## Features
