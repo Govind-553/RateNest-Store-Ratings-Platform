@@ -10,6 +10,9 @@ node_modules/
 .env.test.local
 .env.production.local
 
+# Vercel CLI metadata (.vercel is created by `vercel link` / `vercel pull`)
+.vercel
+
 # Production build outputs
 dist/
 build/

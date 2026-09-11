@@ -158,11 +158,12 @@ Seeded by `npm run seed`. Password for all accounts: `Password@123`
 
 ### Backend (`backend/`)
 
-| Script       | Command                                   |
-|--------------|-------------------------------------------|
-| `build`      | `nest build`                              |
-| `start:dev`  | `nest start --watch`                      |
-| `start:prod` | `node dist/main`                          |
+| Script         | Command                                   |
+|----------------|-------------------------------------------|
+| `build`        | `nest build`                              |
+| `vercel-build` | `prisma generate && nest build` (Vercel)  |
+| `start:dev`    | `nest start --watch`                      |
+| `start:prod`   | `node dist/main`                          |
 | `lint`       | `oxlint src/ test/`                       |
 | `test`       | `vitest run`                              |
 | `test:e2e`   | `vitest run --config ./vitest.config.e2e.ts` |
@@ -176,3 +177,103 @@ Seeded by `npm run seed`. Password for all accounts: `Password@123`
 | `build`   | `tsc -b && vite build` |
 | `lint`    | `oxlint`             |
 | `preview` | `vite preview`       |
+
+## Deployment
+
+Deployment is done **manually** — this repository is already prepared with the
+required code and configuration, but nothing is deployed automatically.
+
+| Layer    | Target      |
+|----------|-------------|
+| Frontend | Cloudflare (Pages) |
+| Backend  | Vercel       |
+| Database | PostgreSQL  |
+
+### What Is Already Prepared (Code Preparation)
+
+- **Frontend API URL is configurable via `VITE_API_URL`.** `frontend/src/services/api.ts` reads `import.meta.env.VITE_API_URL || '/api'`. Locally it defaults to `/api`, which the Vite dev server proxies to `http://localhost:3000` (development-only proxy, unchanged). In production, Cloudflare sets `VITE_API_URL` to the deployed Vercel backend URL.
+- **`frontend/.env.example`** provides the `VITE_API_URL=/api` template. `VITE_*` variables are public (browser-side) — never put `DATABASE_URL` or `JWT_SECRET` there.
+- **Cloudflare SPA fallback** — `frontend/public/_redirects` (`/* /index.html 200`) is copied into `dist/` on build so direct routes (`/login`, `/stores`, `/admin`, ...) work on Cloudflare Pages.
+- **Backend CORS is configurable via `FRONTEND_URL`** (`backend/src/app.setup.ts`). Local development origins (`localhost:5173` / `127.0.0.1:5173`) remain allowed; production adds the Cloudflare domain. `credentials: true` is preserved and `origin: '*'` is not used.
+- **`backend/.env.example`** has placeholders only for `DATABASE_URL`, `JWT_SECRET`, `JWT_EXPIRES_IN`, `FRONTEND_URL`, and `PORT`.
+- **Vercel serverless entrypoint** — `backend/api/index.ts` reuses the shared app setup (`createApp`), is compiled automatically as a Node serverless function by Vercel (no `vercel.json` required), and preserves the global `/api` prefix. `main.ts` still boots standalone with `app.listen()` for local development.
+- **Prisma Client is generated during the deployment build** via the `vercel-build` script (`prisma generate && nest build`). The schema reads `DATABASE_URL` from the environment.
+- **`.vercel` is gitignored** for local Vercel CLI usage.
+
+### Recommended Deployment Order
+
+1. Prepare the PostgreSQL database (create the database and user).
+2. Deploy the backend to Vercel manually.
+3. Copy the generated Vercel backend URL (e.g. `https://<api-project>.vercel.app`).
+4. Configure the backend `FRONTEND_URL` environment variable with the Cloudflare frontend URL.
+5. Run the production Prisma migration manually (`npx prisma migrate deploy`).
+6. Deploy the frontend to Cloudflare manually.
+7. Set `VITE_API_URL` on Cloudflare to `https://<api-project>.vercel.app/api`.
+8. Redeploy the frontend if the environment variable changed.
+9–13. Test authentication, stores, ratings, the Admin dashboard, and the Store Owner dashboard.
+
+### Frontend — Cloudflare (manual)
+
+1. Push the project to GitHub.
+2. Open the Cloudflare dashboard.
+3. Create/connect the frontend project.
+4. Select the GitHub repository.
+5. Set the frontend root directory to `frontend`.
+6. Install command: `npm install`.
+7. Build command: `npm run build`.
+8. Output directory: `dist`.
+9. Add the environment variable `VITE_API_URL=https://<vercel-backend-domain>/api`.
+10. Deploy.
+
+> The SPA fallback (`_redirects`) ships inside `dist/`, so no extra rewrite rules are needed.
+
+### Backend — Vercel (manual)
+
+1. Open Vercel and import the GitHub repository.
+2. Set the project root directory to `backend`.
+3. Framework preset: **Other / Node.js**. The `backend/api/index.ts` entrypoint is picked up automatically; no framework-specific settings are required.
+4. The `vercel-build` script generates the Prisma Client and runs `nest build`.
+5. Add the environment variables `DATABASE_URL`, `JWT_SECRET`, `JWT_EXPIRES_IN`, and `FRONTEND_URL`.
+6. Deploy.
+7. Copy the generated Vercel backend URL for use as the frontend `VITE_API_URL`.
+
+### Database — PostgreSQL (manual)
+
+- Point `DATABASE_URL` at your PostgreSQL instance.
+- Apply migrations manually in production: `cd backend && npx prisma migrate deploy`.
+- Development uses `npx prisma migrate dev` and seeds with `npm run seed`.
+- Seeding is **never** run automatically on startup and is intended for development/demo only.
+
+### Environment Variables
+
+| Variable         | Where     | Purpose                                  | Public |
+|------------------|-----------|------------------------------------------|--------|
+| `DATABASE_URL`   | Vercel    | PostgreSQL connection string             | No     |
+| `JWT_SECRET`     | Vercel    | JWT signing secret                       | No     |
+| `JWT_EXPIRES_IN` | Vercel    | JWT expiration (e.g. `1d`)               | No     |
+| `FRONTEND_URL`   | Vercel    | Allowed frontend origin for CORS         | No     |
+| `PORT`           | Local     | Backend port (default `3000`)            | No     |
+| `VITE_API_URL`   | Cloudflare| Backend API base URL (`/api` locally)    | Yes    |
+
+**Never** add `DATABASE_URL`, `JWT_SECRET`, passwords, or private keys to
+Cloudflare frontend variables — `VITE_*` variables are exposed to the browser.
+
+### Post-Deployment Checklist
+
+- [ ] Frontend loads
+- [ ] Login works
+- [ ] Registration works
+- [ ] JWT authentication works
+- [ ] Stores load
+- [ ] Store search works
+- [ ] Rating submission works
+- [ ] Rating update works
+- [ ] Admin dashboard works
+- [ ] Admin user management works
+- [ ] Admin store management works
+- [ ] Store Owner dashboard works
+- [ ] Direct React routes work (SPA fallback)
+- [ ] No CORS errors
+- [ ] No mixed-content errors
+- [ ] No API `localhost` references
+- [ ] No secrets exposed in the browser
