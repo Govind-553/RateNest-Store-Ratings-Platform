@@ -180,39 +180,25 @@ Seeded by `npm run seed`. Password for all accounts: `Password@123`
 
 ## Deployment
 
-Deployment is done **manually** — this repository is already prepared with the
-required code and configuration, but nothing is deployed automatically.
-
 | Layer    | Target      |
 |----------|-------------|
 | Frontend | Cloudflare (Pages) |
 | Backend  | Vercel       |
 | Database | PostgreSQL  |
 
-### What Is Already Prepared (Code Preparation)
-
-- **Frontend API URL is configurable via `VITE_API_URL`.** `frontend/src/services/api.ts` reads `import.meta.env.VITE_API_URL || '/api'`. Locally it defaults to `/api`, which the Vite dev server proxies to `http://localhost:3000` (development-only proxy, unchanged). In production, Cloudflare sets `VITE_API_URL` to the deployed Vercel backend URL.
-- **`frontend/.env.example`** provides the `VITE_API_URL=/api` template. `VITE_*` variables are public (browser-side) — never put `DATABASE_URL` or `JWT_SECRET` there.
-- **Cloudflare SPA fallback** — `frontend/public/_redirects` (`/* /index.html 200`) is copied into `dist/` on build so direct routes (`/login`, `/stores`, `/admin`, ...) work on Cloudflare Pages.
-- **Backend CORS is configurable via `FRONTEND_URL`** (`backend/src/app.setup.ts`). Local development origins (`localhost:5173` / `127.0.0.1:5173`) remain allowed; production adds the Cloudflare domain. `credentials: true` is preserved and `origin: '*'` is not used.
-- **`backend/.env.example`** has placeholders only for `DATABASE_URL`, `JWT_SECRET`, `JWT_EXPIRES_IN`, `FRONTEND_URL`, and `PORT`.
-- **Vercel serverless entrypoint** — `backend/api/index.ts` reuses the shared app setup (`createApp`), is compiled automatically as a Node serverless function by Vercel (no `vercel.json` required), and preserves the global `/api` prefix. `main.ts` still boots standalone with `app.listen()` for local development.
-- **Prisma Client is generated during the deployment build** via the `vercel-build` script (`prisma generate && nest build`). The schema reads `DATABASE_URL` from the environment.
-- **`.vercel` is gitignored** for local Vercel CLI usage.
-
 ### Recommended Deployment Order
 
 1. Prepare the PostgreSQL database (create the database and user).
-2. Deploy the backend to Vercel manually.
+2. Deploy the backend to Vercel.
 3. Copy the generated Vercel backend URL (e.g. `https://<api-project>.vercel.app`).
 4. Configure the backend `FRONTEND_URL` environment variable with the Cloudflare frontend URL.
 5. Run the production Prisma migration manually (`npx prisma migrate deploy`).
-6. Deploy the frontend to Cloudflare manually.
+6. Deploy the frontend to Cloudflare.
 7. Set `VITE_API_URL` on Cloudflare to `https://<api-project>.vercel.app/api`.
 8. Redeploy the frontend if the environment variable changed.
 9–13. Test authentication, stores, ratings, the Admin dashboard, and the Store Owner dashboard.
 
-### Frontend — Cloudflare (manual)
+### Frontend — Cloudflare
 
 1. Push the project to GitHub.
 2. Open the Cloudflare dashboard.
@@ -227,7 +213,7 @@ required code and configuration, but nothing is deployed automatically.
 
 > The SPA fallback (`_redirects`) ships inside `dist/`, so no extra rewrite rules are needed.
 
-### Backend — Vercel (manual)
+### Backend — Vercel
 
 1. Open Vercel and import the GitHub repository.
 2. Set the project root directory to `backend`.
@@ -237,7 +223,7 @@ required code and configuration, but nothing is deployed automatically.
 6. Deploy.
 7. Copy the generated Vercel backend URL for use as the frontend `VITE_API_URL`.
 
-### Database — PostgreSQL (manual)
+### Database — PostgreSQL
 
 - Point `DATABASE_URL` at your PostgreSQL instance.
 - Apply migrations manually in production: `cd backend && npx prisma migrate deploy`.
